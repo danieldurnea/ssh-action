@@ -1,30 +1,15 @@
----
-name: Dispatch a SSH session
-
-on:
-  workflow_dispatch:
-    inputs:
-      os:
-        description: 'Leave only desired OS in the field'
-        required: true
-        default: ubuntu-latest
-
+name: remote ssh command
+on: [push]
 jobs:
-  start_ssh_session:
-    runs-on: ${{ github.event.inputs.os }}
-    name: Start the SSH session
+  build:
+    name: Build
+    runs-on: ubuntu-latest
     steps:
-    - name: Start SSH session
-      uses: luchihoratiu/debug-via-ssh@main
-      with:
-        NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
-        SSH_PASS: ${{ secrets.SSH_PASS }}
-      
-      name: Run entrypoint.sh
-      run: entrypoint.sh
-      shell: bash
-    
-
-branding:
-  icon: "terminal"
-  color: "gray-dark"
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: linuxserver.io
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: whoami
